@@ -273,8 +273,14 @@
       font-weight: 600;
     }
 
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
     .download-btn {
-      width: 100%;
+      flex: 1;
       padding: 12px 20px;
       background: linear-gradient(45deg, #27ae60, #2ecc71);
       color: white;
@@ -286,8 +292,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       text-decoration: none;
+      font-size: 14px;
     }
 
     .download-btn:hover {
@@ -298,6 +305,35 @@
     }
 
     .download-btn:active {
+      transform: translateY(0);
+    }
+
+    .preview-btn {
+      flex: 1;
+      padding: 12px 20px;
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .preview-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+
+    .preview-btn:active {
       transform: translateY(0);
     }
 
@@ -569,23 +605,28 @@
                 <span class="spec-value">${quality}</span>
               </div>
               <div class="spec-item">
-                <span class="spec-label">File Size</span>
-                <span class="spec-value">${size}</span>
-              </div>
-              <div class="spec-item">
                 <span class="spec-label">Format</span>
                 <span class="spec-value">${extension.toUpperCase()}</span>
               </div>
-              <div class="spec-item">
-                <span class="spec-label">Bitrate</span>
-                <span class="spec-value">${format.abr || format.vbr || 'N/A'}</span>
-              </div>
+              ${format.vbr ? `<div class="spec-item">
+                <span class="spec-label">Video Bitrate</span>
+                <span class="spec-value">${format.vbr} kbps</span>
+              </div>` : ''}
+              ${format.abr ? `<div class="spec-item">
+                <span class="spec-label">Audio Bitrate</span>
+                <span class="spec-value">${format.abr} kbps</span>
+              </div>` : ''}
             </div>
             
-            <a href="${format.url}" target="_blank" class="download-btn">
-              <i class="fas fa-download"></i>
-              Download ${formatType.label}
-            </a>
+            <div class="action-buttons">
+              ${format.vcodec && format.vcodec !== 'none' ? 
+                `<button class="preview-btn" onclick="previewVideo('${format.url}', '${title}')">
+                  <i class="fas fa-play"></i> Preview
+                </button>` : ''}
+              <button class="download-btn" onclick="downloadFile('${format.url}', '${title.replace(/[^a-zA-Z0-9]/g, '_')}.${extension}')">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
           </div>
         `;
       });
@@ -604,11 +645,11 @@
       const hasAudio = format.acodec && format.acodec !== 'none';
       
       if (hasVideo && hasAudio) {
-        return { label: 'Video + Audio', class: 'badge-video-audio' };
+        return { label: 'Video with Audio', class: 'badge-video-audio' };
       } else if (hasVideo) {
-        return { label: 'Video Only', class: 'badge-video' };
+        return { label: 'Video without Audio', class: 'badge-video' };
       } else if (hasAudio) {
-        return { label: 'Audio Only', class: 'badge-audio' };
+        return { label: 'Audio', class: 'badge-audio' };
       } else {
         return { label: 'Unknown', class: 'badge-video' };
       }
@@ -626,13 +667,20 @@
 
     function getQualityLabel(format) {
       if (format.height) {
+        if (format.height >= 2160) return `4K (${format.height}p)`;
+        if (format.height >= 1440) return `2K (${format.height}p)`;
+        if (format.height >= 1080) return `Full HD (${format.height}p)`;
+        if (format.height >= 720) return `HD (${format.height}p)`;
+        if (format.height >= 480) return `SD (${format.height}p)`;
         return `${format.height}p`;
       } else if (format.abr) {
+        if (format.abr >= 320) return `High Quality (${format.abr} kbps)`;
+        if (format.abr >= 128) return `Medium Quality (${format.abr} kbps)`;
         return `${format.abr} kbps`;
       } else if (format.quality_label) {
         return format.quality_label;
       } else {
-        return 'Standard';
+        return 'Standard Quality';
       }
     }
 
@@ -658,6 +706,138 @@
         return `${mins}:${secs.toString().padStart(2, '0')}`;
       }
     }
+
+    // Auto download function
+    function downloadFile(url, filename) {
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.target = '_blank';
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show feedback
+      showDownloadFeedback();
+    }
+
+    // Preview video function
+    function previewVideo(url, title) {
+      // Create modal for video preview
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease-out;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: white;
+          border-radius: 20px;
+          padding: 20px;
+          max-width: 90%;
+          max-height: 90%;
+          position: relative;
+        ">
+          <button onclick="this.closest('div').parentElement.remove()" style="
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+          ">&times;</button>
+          <h3 style="margin-bottom: 15px; color: #2c3e50;">${title}</h3>
+          <video controls style="width: 100%; max-width: 800px; border-radius: 10px;">
+            <source src="${url}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      `;
+      
+      // Close on background click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+      
+      document.body.appendChild(modal);
+    }
+
+    // Show download feedback
+    function showDownloadFeedback() {
+      const feedback = document.createElement('div');
+      feedback.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideInRight 0.3s ease-out;
+      `;
+      
+      feedback.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        Download started successfully!
+      `;
+      
+      document.body.appendChild(feedback);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        feedback.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => feedback.remove(), 300);
+      }, 3000);
+    }
+
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
