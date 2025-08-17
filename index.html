@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoDownloader Pro - Download Videos from Any Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-download"></i>
+                    VideoDownloader Pro
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#supported">Platforms</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero" id="home">
+            <div class="hero-content">
+                <h1>Download Any Video</h1>
+                <p>The most powerful and reliable video downloader for YouTube, Instagram, TikTok, and 1000+ other platforms. Fast, free, and easy to use.</p>
+                
+                <div class="platforms">
+                    <span class="platform-tag"><i class="fab fa-youtube"></i>YouTube</span>
+                    <span class="platform-tag"><i class="fab fa-instagram"></i>Instagram</span>
+                    <span class="platform-tag"><i class="fab fa-tiktok"></i>TikTok</span>
+                    <span class="platform-tag"><i class="fab fa-twitter"></i>Twitter</span>
+                    <span class="platform-tag"><i class="fab fa-facebook"></i>Facebook</span>
+                    <span class="platform-tag"><i class="fab fa-vimeo"></i>Vimeo</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-number">10M+</span>
+                        <span class="stat-label">Downloads</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Websites</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section" id="features">
+            <h2 class="section-title">
+                <i class="fas fa-magic"></i>
+                Start Downloading Now
+            </h2>
+            
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="videoUrl" 
+                    class="url-input" 
+                    placeholder="Paste any video URL here (YouTube, Instagram, TikTok, Twitter...)"
+                >
+                <button id="fetchBtn" class="download-btn">
+                    <i class="fas fa-download"></i>
+                    Download
+                </button>
+            </div>
+            
+            <div id="errorMessage"></div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <div>Analyzing video and fetching download options...</div>
+            </div>
+        </div>
+
+        <!-- Video Information -->
+        <div id="videoInfo"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-features">
+                <div class="footer-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>100% Safe & Secure</span>
+                </div>
+                <div class="footer-feature">
+                    <i class="fas fa-bolt"></i>
+                    <span>Lightning Fast</span>
+                </div>
+                <div class="footer-feature">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Works on All Devices</span>
+                </div>
+                <div class="footer-feature">
+                    <i class="fas fa-infinity"></i>
+                    <span>Unlimited Downloads</span>
+                </div>
+            </div>
+            <p>Supporting 1000+ websites including YouTube, Instagram, TikTok, Twitter, Facebook, Vimeo and many more. No registration required, completely free to use.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
